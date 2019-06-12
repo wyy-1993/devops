@@ -1,8 +1,16 @@
-#!/bin/sh
-yarn stdver
+#!/bin/bash
+cd `dirname $0`
 
-yarn build
+img_mvn="maven:3.3.3-jdk-8"                 # docker image of maven
+m2_cache=~/.m2                              # the local maven cache dir
+proj_home=$PWD                              # the project root dir
 
-git remote add github https://$GITHUB_TOKEN@github.com/levy9527/nuxt-element-dashboard.git > /dev/null 2>&1
-git push github HEAD:master --follow-tags
+git pull  # should use git clone https://name:pwd@xxx.git
 
+echo "use docker maven"
+docker run --rm \
+   -v $m2_cache:/root/.m2 \
+   -v $proj_home:/usr/src/mymaven \
+   -w /usr/src/mymaven $img_mvn mvn clean package -U
+
+mv $proj_home/deep-exi-01-provider/target/deep-exi-01-provider-*.jar $proj_home/deep-exi-01-provider/target/demo.jar
